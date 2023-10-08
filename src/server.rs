@@ -42,15 +42,16 @@ async fn spawn_client_listener_task(listener: &TcpListener) ->
     let (socket, addr) = listener.accept().await?;
     println!("Client {addr} connected to server");
     tokio::spawn(async move {
-        let _ = ping_pong(socket, addr).await;
+        let rv = ping_pong(socket, addr).await;
+        match rv {
+          Ok(()) => println!("Client {addr} disconnected"),
+          Err(e) => println!("Error: {e}"),
+        }
     });
     Ok(())
 }
 
 async fn ping_pong(mut socket: tokio::net::TcpStream, _addr: SocketAddr) -> Result<(), Box<dyn Error>> {
-  let ack_msg = vec![ServerMessage::Ping as u8];
-  socket.write_all(&ack_msg[..]).await?;
-
   let recv_val;
   match socket.read_u8().await {
       Ok(val) => recv_val = val,

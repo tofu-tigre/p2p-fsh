@@ -14,7 +14,7 @@ pub async fn run_client(v: ServerMessage) -> Result<(), Box<dyn Error>> {
     ServerMessage::Ping => println!("PING!"),
     ServerMessage::Pong => println!("PONG!"),
   }
-  stream.write_u8(v as u8).await?;
+  stream.write_u8(3 as u8).await?;
 
   let recv_val;
   match stream.read_u8().await {
